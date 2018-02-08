@@ -35,7 +35,7 @@ public class Main {
 	private static String USERNAME = ""; //BimServer Username
 	private static String PASSWORD = ""; //BimServer Password
 	private static String PROJECT = "";  // Model name on BimServer
-	public static String CONVERTER_PATH = "C:\\WebViz\\Converter\\";
+	public static String CONVERTER_PATH = ""; //Enter your converter path
 	public static String JSON_PATH = CONVERTER_PATH + PROJECT + "\\" + PROJECT + ".json";
 	public static String IFCS_PATH = CONVERTER_PATH + PROJECT + "\\" + "IFCs\\";
 	public static String OBJS_PATH = CONVERTER_PATH + PROJECT + "\\" + "OBJs\\";

@@ -1,0 +1,11 @@
+/coverage
+/output
+/.idea
+.eslintrc.json
+.gitattributes
+.npmignore
+gulpfile.js
+*.tgz
+*.zip
+.eslintcache
+.nyc_output

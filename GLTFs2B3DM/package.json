@@ -1,0 +1,55 @@
+{
+  "name": "3d-tiles-samples-generator",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "Tools for generating sample 3D Tiles tilesets.",
+  "author": {
+    "name": "Analytical Graphics, Inc. and Contributors",
+    "url": "https://github.com/AnalyticalGraphicsInc/3d-tiles-tools/graphs/contributors"
+  },
+  "keywords": [
+    "3D Tiles"
+  ],
+  "homepage": "https://github.com/AnalyticalGraphicsInc/3d-tiles-tools",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnalyticalGraphicsInc/3d-tiles-tools.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AnalyticalGraphicsInc/3d-tiles-tools/issues"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "cesium": "^1.39",
+    "fs-extra": "^4.0.2",
+    "gltf-pipeline": "^1.0.2",
+    "jquery": "^3.3.1",
+    "jsdom": "^11.6.2",
+    "mime": "^2.0.3",
+    "simplex-noise": "^2.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.10.0",
+    "eslint-config-cesium": "^2.0.1",
+    "gulp": "^3.9.1",
+    "jasmine": "^2.8.0",
+    "jasmine-spec-reporter": "^4.2.1",
+    "nyc": "^11.3.0",
+    "open": "^0.0.5",
+    "requirejs": "^2.3.5",
+    "yargs": "^10.0.3"
+  },
+  "scripts": {
+    "eslint": "eslint \"./**/*.js\" --cache --quiet",
+    "test": "gulp test",
+    "test-watch": "gulp test-watch",
+    "coverage": "gulp coverage"
+  },
+  "bin": {
+    "3d-tiles-samples-generator": "./bin/3d-tiles-samples-generator"
+  }
+}
