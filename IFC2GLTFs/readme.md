@@ -6,7 +6,7 @@ https://github.com/opensourceBIM/BIMserver/wiki/BimServerClient
 
 After the BimServer setup, a converter folder needs to be created and obj2gltf folder and IfcConvert.exe need to be downloaded and included in the folder.
 
-Running the script will add another folder for you model which will have the following structure at the end of execution:
+Running the script will add another folder for your model which will have the following structure at the end of conversion:
 
 --Converter:
 
