@@ -9,12 +9,20 @@ After the BimServer setup, a converter folder needs to be created and obj2gltf f
 Running the script will add another folder for you model which will have the following structure at the end of execution:
 
 --Converter:
+
 --------------obj2gltf
+
 --------------IfcConvert.exe
+
 --------------ModelFolder:
+
 --------------------------IFCs
+
 --------------------------SJSONs
+
 --------------------------OBJs
+
 --------------------------GLTFs
+
 --------------------------model.josn
 
