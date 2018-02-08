@@ -4,7 +4,7 @@ The converter is designed to ultimately convert an IFC file to B3DM to enable ob
 
 The converter uses the following architecture as can be seen from the below diagram:
 
-<p align="center"><img src="figures/architecture.png"/></p>
+<p align="center"><img src="figures/architecture.jpg"/></p>
 
 BimServer API is used to download an IFC file for each constituent component of the model by recursively sending queries based on oids and ifc types obtained from the json file of the ifc model.
 Each ifc file is then converted to OBJ using IfcConvert and then to GLTF using obj2gltf. Finally, 3d-tiles-tools sample generator has been modified to generate the
