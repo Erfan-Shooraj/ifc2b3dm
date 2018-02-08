@@ -2,7 +2,7 @@
 
 The converter is designed to ultimately convert an IFC file to B3DM to enable object selection and BIM (Building Information Management) in Cesium.
 
-The converter uses the following architecture as can be seen from the below diagram:
+The converter uses the following architecture as can be seen from the diagram:
 
 <p align="center"><img src="figures/architecture.jpg"/></p>
 
