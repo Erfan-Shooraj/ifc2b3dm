@@ -1,6 +1,8 @@
-# 3D Tiles Samples Generator
+# GLTFs2B3DM
 
-The tilesets generated here are included in [3d-tiles-samples](https://github.com/AnalyticalGraphicsInc/3d-tiles-samples) and [Cesium](https://github.com/AnalyticalGraphicsInc/cesium).
+This is the heavily modified 3D Tiles Samples Generator which converts a group of GLTFs to a B3DM. Changes have been made to account for gltf models with large number of indices, meshes and primitivees. The materials as generated with IFC2GLTFs will also be comaptible. The final b3dm contains a batch table hierarchy which includes information from the original ifc files (such as GUID, BATID, BimServer Dimensions and BimServer Constraint) as the properties of each object. This is done using the json (Streaming) export files from BimServer.
+
+Please visit https://github.com/AnalyticalGraphicsInc/3d-tiles-tools/tree/master/samples-generator for the original 3d tiles sample generator code.
 
 ## Instructions
 
@@ -12,27 +14,15 @@ npm install
 node bin/generator.js
 ```
 
-This commands generates a set of tilesets and saves them in a folder called `output`. The `Batched`, `Composite`, `Instanced`, `PointCloud`, and `Tilesets` folders may be copied directly to Cesium's `Specs/Data/Cesium3DTiles/` folder for testing with Cesium. The tilesets in the `Samples` folder may be copied to the `tilesets` folder in `3d-tiles-samples`.
+To convert the model effictely, before execution data folder need to include your GLTFs and SJSONs from IFC2GLTFs conversion and need to be specified in lib/createBatchTableHierarchy.js. The folder structure should be as follows:
 
-Run the tests:
-```
-npm run test
-```
-To run ESLint on the entire codebase, run:
-```
-npm run eslint
-```
-To run ESLint automatically when a file is saved, run the following and leave it open in a console window:
-```
-npm run eslint-watch
-```
+-----/data/
 
-## Contributions
+---------------model/
 
-Pull requests are appreciated!  Please use the same [Contributor License Agreement (CLA)](https://github.com/AnalyticalGraphicsInc/cesium/blob/master/CONTRIBUTING.md) and [Coding Guide](https://github.com/AnalyticalGraphicsInc/cesium/blob/master/Documentation/Contributors/CodingGuide/README.md) used for [Cesium](http://cesiumjs.org/).
+---------------------------GLTFs/
 
----
+---------------------------SJSONs/
 
-<p align="center">
-<a href="http://cesiumjs.org/"><img src="doc/cesium.png" onerror="this.src='cesium.png'"/></a>
-</p>
+
+The output 3D tile will be generated in output\Hierarchy\BatchTableHierarchy\model folder and will include the b3dm and tileset.json.
