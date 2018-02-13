@@ -9,6 +9,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.bimserver.client.BimServerClient;
 import org.bimserver.client.json.JsonBimServerClientFactory;
 import org.bimserver.shared.ChannelConnectionException;
@@ -23,6 +27,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+
 /**This script uses BimServer API to split an IFC model into its constituent components.
  * It then uses IfcConvert to convert each IFC file to OBJ format
  * Finally, the OBJ files are converted to GLTF using obj2gltf
@@ -48,15 +53,14 @@ public class Main {
 			// Connect to the server
 			JsonBimServerClientFactory clientFactory = new JsonBimServerClientFactory(ADDRESS);
 			BimServerClient client = clientFactory.create(new UsernamePasswordAuthenticationInfo(USERNAME, PASSWORD));
-			
 			// Create project folder
 			File project_dir = new File(CONVERTER_PATH + PROJECT);
 			project_dir.mkdir();
 			
 			// Get the Project Json
 			Long roid = client.getServiceInterface().getTopLevelProjectByName(PROJECT).getLastRevisionId();
-			//DownloadProjectJSON(client, roid); //Downloads malformed json on large models sometime
-												 //Better to download the json file directly from bimserver and put in the model folder
+			//DownloadProjectJSON(client, roid); //Downloads malformed json on large models sometimes
+												 //Better to download directly from bimserver and put in the model folder
 
 			// Split the IFC files
 			IFCSplitter splitter = new IFCSplitter(client);
@@ -67,6 +71,8 @@ public class Main {
 			// And Json (Streaming)
 			File sjsons_dir = new File(SJSONS_PATH);
 			sjsons_dir.mkdir();
+	
+		
 			
 			long ifcstartTime = System.currentTimeMillis();
 			
@@ -94,45 +100,31 @@ public class Main {
 					
 					if (type.equals("IfcWallStandardCase") || type.equals("IfcWall")) {
 						splitter.splitWall(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcWindow")) {
+					} else if (type.toString().equals("IfcWindow")) {
 						splitter.splitWindow(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					
-					if (type.toString().equals("IfcColumn")) {
+					} else if (type.toString().equals("IfcColumn")) {
 						splitter.splitColumn(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcSlab")) {
+					} else if (type.toString().equals("IfcSlab")) {
 						splitter.splitSlab(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcStair")) {
+					} else if (type.toString().equals("IfcStair")) {
 						splitter.splitStair(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcDoor")) {
+					} else if (type.toString().equals("IfcDoor")) {
 						splitter.splitDoor(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcBuildingElementProxy")) {
+					} else if (type.toString().equals("IfcBuildingElementProxy")) {
 						splitter.splitBuildingElementProxy(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcBeam")) {
+					} else if (type.toString().equals("IfcBeam")) {
 						splitter.splitBeam(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcCovering")) {
+					} else if (type.toString().equals("IfcCovering")) {
 						splitter.splitCovering(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcRailing")) {
+					} else if (type.toString().equals("IfcRailing")) {
 						splitter.splitRailing(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcRamp")) {
+					} else if (type.toString().equals("IfcRamp")) {
 						splitter.splitRamp(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcFlowTerminal")) {
+					} else if (type.toString().equals("IfcFlowTerminal")) {
 						splitter.splitFlowTerminal(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcFurnishingElement")) {
+					} else if (type.toString().equals("IfcFurnishingElement")) {
 						splitter.splitFurnishingElement(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
-					}
-					if (type.toString().equals("IfcCurtainWall")) {
+					} else if (type.toString().equals("IfcCurtainWall")) {
 						splitter.splitCurtainWalls(roid, Long.toString(oid), IFCS_PATH, SJSONS_PATH);
 					}
 					
@@ -168,13 +160,15 @@ public class Main {
 			long totalifcTime = ifcendTime - ifcstartTime;
 			System.out.println("Total Time to Split the IFC File : " + totalifcTime + "ms");
 			
+		
+			File[] ifcs = ifcs_dir.listFiles();
+			
 			// Convert the IFC files to OBJ
 			
 			// Create the folder to store OBJ files
 			File objs_dir = new File(OBJS_PATH);
 			objs_dir.mkdir();
 			
-	        File[] ifcs = ifcs_dir.listFiles();
 
 	        long objstartTime = System.currentTimeMillis();
 	        //******* Note: IfcConvert needs to be in the converter folder
@@ -210,12 +204,15 @@ public class Main {
 		 			}
 	        	}
 	        	
-		        // Convert the each IFC file to OBJ
+		        // Convert each IFC file to OBJ
 
 	        	//******* Note: obj2gltf needs to be in the converter folder
 		        int fifcstart=0;
 				int fifcend;
 				int ifcstepsize=50;
+				
+				// Fixed thread pool size
+				ExecutorService objExecutor = Executors.newFixedThreadPool(6);
 				for (int j=0; j<= ifcs.length/ifcstepsize;j++) {
 					fifcstart= (ifcstepsize*j);
 					if(j==ifcs.length/ifcstepsize)
@@ -226,38 +223,14 @@ public class Main {
 					//System.out.println("fifcstart = " + fifcstart);
 					//System.out.println("fifcend = " + fifcend);
 					
-					// init shell
-			        ProcessBuilder ifcconvert_builder = new ProcessBuilder( "cmd.exe" );
-			        Process ifcconvert_p=null;
-			        ifcconvert_p = ifcconvert_builder.start();
-		            BufferedWriter ifcconvert_p_stdin = 
-		  		          new BufferedWriter(new OutputStreamWriter(ifcconvert_p.getOutputStream()));
-		          
-			        
-		            ifcconvert_p_stdin.write("cd " + OBJS_PATH);
-		            ifcconvert_p_stdin.newLine();
-		            ifcconvert_p_stdin.flush();
-			        for (int i=fifcstart; i<fifcend;i++) {
-			        	if (!((new File (OBJS_PATH + ifcs[i].getName().split(".ifc")[0] + ".obj")).exists())) {
-							ifcconvert_p_stdin.write("IfcConvert \"../IFCs/" + ifcs[i].getName() + "\" \"./" + ifcs[i].getName().split(".ifc")[0] + ".obj\"");
-							ifcconvert_p_stdin.newLine();
-							ifcconvert_p_stdin.flush();
-			        	}
-			        }
-			        
-			        // finally close the shell by execution exit command
-			        ifcconvert_p_stdin.write("exit");
-			        ifcconvert_p_stdin.newLine();
-			        ifcconvert_p_stdin.flush();
-
-		 	        
-		 	        // Write the output to the console (essential or the rest would not work for some reason)
-		 	        BufferedReader ifcconvert_br = new BufferedReader(new InputStreamReader(ifcconvert_p.getInputStream()));
-		 	        String ifcconvert_thisLine = null;
-
-		 			while ((ifcconvert_thisLine = ifcconvert_br.readLine()) != null) {
-		 				System.out.println(ifcconvert_thisLine);
-		 			}
+					ObjThread t = new ObjThread(ifcs,fifcstart,fifcend);
+					objExecutor.submit(t);
+				}
+				objExecutor.shutdown();
+		        try {
+		        	objExecutor.awaitTermination(1, TimeUnit.HOURS);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 				
 				// init shell
@@ -294,8 +267,8 @@ public class Main {
 			long objendTime = System.currentTimeMillis();
 			long totalobjTime = objendTime - objstartTime;
 			System.out.println("Total Time to convert the IFC files to OBJ : " + totalobjTime + "ms");
-
 			
+
 			//Create the folder to store GLTF files
 			
 	        File gltfs_dir = new File(GLTFS_PATH);
@@ -303,65 +276,37 @@ public class Main {
 			
 	        // Convert the OBJ files to GLTF
 	        long gltfstartTime = System.currentTimeMillis();
-			int fobjstart=0;
+	        int fobjstart=0;
 			int fobjend;
-			int objstepsize=35;
-			for (int j=0; j<= ifcs.length/objstepsize;j++) {
+			int objstepsize=30;
+			int threadCount=0;
+			ExecutorService gltfExecutor = Executors.newFixedThreadPool(6);
+	        for (int j=0; j<= ifcs.length/objstepsize;j++) {
 				fobjstart= (objstepsize*j);
 				if(j==ifcs.length/objstepsize)
 					fobjend = fobjstart + ((ifcs.length)%objstepsize);
 				else
 					fobjend = fobjstart + objstepsize;
-				
-				// init shell
-				ProcessBuilder gltf_builder = new ProcessBuilder( "cmd.exe" );
-				Process gltf_p=null;
-	        
-	        
-		        try {
-		            gltf_p = gltf_builder.start();
-		            BufferedWriter gltf_p_stdin = 
-		  		          new BufferedWriter(new OutputStreamWriter(gltf_p.getOutputStream()));
-		            gltf_p_stdin.write("cd " + OBJ2GLTFPATH);
-					gltf_p_stdin.newLine();
-			        gltf_p_stdin.flush();
-		        
-			        for (int i=fobjstart; i<fobjend;i++) {
-			        	System.out.println(ifcs[i].getName().split(".ifc")[0]);
-			        	if (!((new File (GLTFS_PATH + ifcs[i].getName().split(".ifc")[0] + ".gltf")).exists())) {
-				        	gltf_p_stdin.write(NODE_PATH + " bin\\\\obj2gltf.js -i \"" + OBJS_PATH + ifcs[i].getName().split(".ifc")[0] +".obj\" -o \"" + GLTFS_PATH + ifcs[i].getName().split(".ifc")[0] + ".gltf\" --materialsCommon");
-				        	// --materialsCommon flag for compatibility with Cesium
-			            	gltf_p_stdin.newLine();
-				            gltf_p_stdin.flush();
-			        	}
-		            }
-			            
-			        // finally close the shell by execution exit command
-			 	    gltf_p_stdin.write("exit");
-			 	    gltf_p_stdin.newLine();
-			 	    gltf_p_stdin.flush();
-			        // Write the output to the console (essential or the rest would not work for some reason)
-			 	    BufferedReader gltf_br = new BufferedReader(new InputStreamReader(gltf_p.getInputStream()));
-			 	    String gltf_thisLine = null;
-	
-			 	    while ((gltf_thisLine = gltf_br.readLine()) != null) {
-			 	    	System.out.println(gltf_thisLine);
-			 		}
-				} catch (IOException e) {
-		        	System.out.println(e);
-		        }
+				GltfThread t = new GltfThread(ifcs, fobjstart, fobjend);
+				gltfExecutor.submit(t);
 	        }
+	        gltfExecutor.shutdown();
+	        try {
+	        	gltfExecutor.awaitTermination(1, TimeUnit.HOURS);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			long gltfendTime = System.currentTimeMillis();
 			long totalgltfTime = gltfendTime - gltfstartTime;
 			System.out.println("Total Time to convert the OBJ files to GLTF : " + totalgltfTime + "ms");
 			
-
 			//long totalTime = totalifcTime + totalobjTime + totalgltfTime;
 			//System.out.println("Total Conversion Time : " + totalTime + "ms");
 
 		} catch (BimServerClientException | ServiceException | ChannelConnectionException e) {
 			e.printStackTrace();
-		} catch (PublicInterfaceNotFoundException e) {
+		} 
+		catch (PublicInterfaceNotFoundException e) {
 			e.printStackTrace();
 		} catch (JsonIOException e1) {
 			e1.printStackTrace();
